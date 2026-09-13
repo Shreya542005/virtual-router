@@ -1,0 +1,67 @@
+phase 2 :packet forwading
+
+1.Created Network Namespaces:
+   sudo ip netns add clientA
+   sudo ip netns add router
+   sudo ip netns add clientB
+
+2.Creadtwd virtual Ethernet(veth)Connections:
+
+   sudo ip link add veth-A type veth peer name veth-R1
+   sudo ip link set veth-A netns clientA
+   sudo ip link set veth-R1 netns router 
+
+   sudo ip link add veth-B type veth peer name veth-R2
+   sudo ip link set veth-B netns clientB
+   sudo ip link set veth-R2 netns router 
+
+3.Assign ip address:
+   sudo ip netns exec clientA ip addr add 192.168.1.10/24 dev veth-A
+   
+   sudo ip netns exec router ip addr add 192.168.1.1/24 dev veth-R1
+   sudo ip netns exec router ip addr add 192.168.2.10/24 dev veth-R2
+
+   sudo ip netns exec clientB ip addr add 192.168.2.10/24 dev veth-B
+
+4.enable network interfaces:
+   sudo ip netns exec clientA ip link set veth-A up
+   sudo ip netns exec router ip link set veth-R1 up
+   sudo ip netns exec router ip link set veth-R2 up
+   sudo ip netns exec clientB ip link set veth-B up
+
+5.Enable ipv4 packet forwarding:
+
+   sudo sysctl -w net.ipv4.ip_forward=1
+
+   verification:cat/proc/sys/net/ipv4/ip_forward
+   result =1.
+
+6.Added routes:
+
+clientA route:
+   sudo ip netns exec clientA ip route add 192.168.2.0/24 via 192.168.1.1
+
+clientB route:
+   sudo ip netns exec clientA ip route add 192.168.1.0/24 via 192.168.2.1  
+
+7.Connectivity tests
+   clientA --> router:
+
+   sudo ip netns exec clientA ping -c 4 192.168.1.1
+
+   clientB --> router:
+
+   sudo ip netns exec clientB ping -c 4 192.168.2.1
+
+8.packet forwarding tests:
+   sudo ip netns exec clientA ping -c 4 192.168.2.10   
+
+   result:
+   4 packet transmitted 
+   4 packet received
+   0% packet loss
+
+
+9. packet forwarding between two different network successsfully demonstrated
+   using linux network Namespaces,veth interfaces,routing configuration and ipv4
+   packet forwading.
