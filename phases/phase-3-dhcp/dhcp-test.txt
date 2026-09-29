@@ -1,0 +1,18 @@
+DHCP test
+# Check Namespaces
+ip netns list
+
+# Start DHCP server
+sudo ip netns exec router dhcpd -cf /etc/dhcp/dhcpd-router.conf -lf /var/lib/dhcp/dhcpd-router.leases -f veth-router
+
+# Request IP from client
+sudo ip netns exec clientB dhclient <client-interface>
+
+# Check Client IP
+sudo ip netns exec clientB ip addr
+
+# Test Connections
+sudo ip netns exec clientB ping -c 4 192.168.50.1
+
+-client reuests an IP address from the DHCP server and the assigned network 
+ configuration is checked using "ip addr".
