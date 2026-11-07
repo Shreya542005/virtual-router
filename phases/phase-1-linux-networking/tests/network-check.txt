@@ -1,4 +1,4 @@
-command used :
+ command used :
 -ip addr 
 -ip route 
 -ping
@@ -14,15 +14,15 @@ command used :
 
 3.after connecting wifi-
   MAC address - d8:f3:bc:da:5b:73
-  IPv4 address -10.158.52.48
+  IPv4 address- 192.168.1.10
 
-4.in 10.158.52.48/24 ,
+4.in 192.168.1.10/24 ,
   /24 corresponds to subnet mask ,which is 255.255.255.0
-  network = 10.158.52.0/24
+  network = 192.168.52.0/24
 
-5.default gateway- 10.158.52.47 
+5.default gateway- 192.168.1.1
 
-6.ping 10.158.52.47 (checking gateway connectivity)
+6.ping 192.168.1.1 (checking gateway connectivity)
   23 packets transmitted,
   23 received, 
   0% packet loss, 
@@ -34,3 +34,16 @@ command used :
   0% packet loss, 
   Result:pass
 
+8. wifi Access point Capabilities
+
+	Supported interface modes:
+		 * IBSS
+		 * managed
+		 * AP
+		 * monitor
+		 * mesh point
+		 * P2P-client
+		 * P2P-GO
+		 * P2P-device
+	Band 1:
+		Capabilities: 0x19ef

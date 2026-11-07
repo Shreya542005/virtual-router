@@ -1,8 +1,7 @@
 # phase 1-linux Networking Fundamentals.
 
 ## learning :
-    i learned basic of linux networking conceptsthat i need before starting the
-    acrual router part
+    i learned basic of linux networking 
      
     Network interfaces
     MAC addresses
@@ -13,14 +12,26 @@
     Packets
     TCP and UDP
 
-## practice : 
-i used these commands:
+## System information  
+
+    Operating System :Ubuntu
+    Network Type:Wireless LAN
+    Router platform:Linux Laptop
+
+## Network interface identification: 
+1 commands:
    ip addr
+   ip link
    ip route
-   ping
 
- checked network interfaces,IP addresses ,routing table and basics connectivity.
+2 Connectivity testing   
+   ping -c 4 10.158.52.47 - Tests connectivity to local network gateway
 
+   ping -c 4 8.8.8.8 - Tests connectivity to external IP address
+
+3 Wirelwss Access Point Capability
+
+   iw list | grep -A 10 "Supported interface modes"
         
 
 

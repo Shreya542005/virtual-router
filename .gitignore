@@ -1,0 +1,5 @@
+# Local Wi-Fi credentials
+config/hostapd/hostapd.conf
+
+git ls-files config/hostapd/hostapd.conf
+

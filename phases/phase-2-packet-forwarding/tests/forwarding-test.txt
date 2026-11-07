@@ -1,67 +1,45 @@
-phase 2 :packet forwading
+# Phase 2 – Packet Forwarding
 
-1.Created Network Namespaces:
-   sudo ip netns add clientA
-   sudo ip netns add router
-   sudo ip netns add clientB
+In this phase, I first tried packet forwarding using Linux network namespaces. Later, I started working on connecting my mobile phone to my laptop using a Wi-Fi access point.
 
-2.Creadtwd virtual Ethernet(veth)Connections:
+## 1. Network Namespace Setup
 
-   sudo ip link add veth-A type veth peer name veth-R1
-   sudo ip link set veth-A netns clientA
-   sudo ip link set veth-R1 netns router 
+  I created three namespaces: `clientA`, `router` and `clientB`.
 
-   sudo ip link add veth-B type veth peer name veth-R2
-   sudo ip link set veth-B netns clientB
-   sudo ip link set veth-R2 netns router 
+   I connected them using veth pairs and assigned IP addresses to create two different networks.
 
-3.Assign ip address:
-   sudo ip netns exec clientA ip addr add 192.168.1.10/24 dev veth-A
-   
-   sudo ip netns exec router ip addr add 192.168.1.1/24 dev veth-R1
-   sudo ip netns exec router ip addr add 192.168.2.10/24 dev veth-R2
+   After that, I enabled IPv4 forwarding and added routes on both clients.
 
-   sudo ip netns exec clientB ip addr add 192.168.2.10/24 dev veth-B
+   Iused ping to check whether the two clients could communicate through the router.
 
-4.enable network interfaces:
-   sudo ip netns exec clientA ip link set veth-A up
-   sudo ip netns exec router ip link set veth-R1 up
-   sudo ip netns exec router ip link set veth-R2 up
-   sudo ip netns exec clientB ip link set veth-B up
+   The ping test showed 4 packets received with 0% packet loss.
 
-5.Enable ipv4 packet forwarding:
+   Commands and test details: `tests/namespace-forwarding-test.txt`
 
-   sudo sysctl -w net.ipv4.ip_forward=1
+## 2. Wi-Fi Access Point Setup
 
-   verification:cat/proc/sys/net/ipv4/ip_forward
-   result =1.
+   After trying the namespace method, I started working with a real Wi-Fi connection.
 
-6.Added routes:
+   I created a virtual Wi-Fi interface called `ap0` and used hostapd to start a Wi-Fi network named `VirtualRouter`.
 
-clientA route:
-   sudo ip netns exec clientA ip route add 192.168.2.0/24 via 192.168.1.1
+   I assigned `192.168.50.1/24` to the `ap0` interface.
 
-clientB route:
-   sudo ip netns exec clientA ip route add 192.168.1.0/24 via 192.168.2.1  
+   My mobile phone could see the Wi-Fi network and complete the authentication, but it disconnected afterwards. So, a stable connection is still pending.
 
-7.Connectivity tests
-   clientA --> router:
+ Commands and test details: `tests/wifi-ap-test.txt`
 
-   sudo ip netns exec clientA ping -c 4 192.168.1.1
+## What is done 
 
-   clientB --> router:
+- Created network namespaces and veth connections.
+- Tested packet forwarding between two networks.
+- Created the `ap0` Wi-Fi interface.
+- Started the `VirtualRouter` Wi-Fi network using hostapd.
+- Assigned an IP address to `ap0`.
+- Tested connection from my mobile phone.
 
-   sudo ip netns exec clientB ping -c 4 192.168.2.1
+## Still working on
 
-8.packet forwarding tests:
-   sudo ip netns exec clientA ping -c 4 192.168.2.10   
-
-   result:
-   4 packet transmitted 
-   4 packet received
-   0% packet loss
-
-
-9. packet forwarding between two different network successsfully demonstrated
-   using linux network Namespaces,veth interfaces,routing configuration and ipv4
-   packet forwading.
+- Getting a stable mobile connection.
+- DHCP configuration.
+- Packet forwarding through the Wi-Fi access point.
+- NAT and internet connectivity.
