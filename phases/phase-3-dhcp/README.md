@@ -1,20 +1,27 @@
-# learned
--How DHCP works and configured a DHCP server 
--client get IP automatically instead of  setting it manually
+# Phase 3 – DHCP Service
 
-# Network
--Router IP: 192.168.50.1/24
--DHCP range: 192.168.50.10 - 192.168.50.100
--DNS: 8.8.8.8
--Network: 192.168.50.0/24
+## Objective
+Implement automatic IP address allocation for devices connected to the virtual router's wireless Access Point.
 
-# linux network namespaces used
--clinetA
--clientB
--router
--DHCP runs inside router
+## Implementation
+- DHCP server: dnsmasq
+- Interface: `ap0`
+- Router IP: `192.168.50.1/24`
+- DHCP pool: `192.168.50.10 – 192.168.50.100`
+- Default gateway: `192.168.50.1`
+- DNS server: `8.8.8.8`
+- Lease duration: 12 hours
 
--DHCP gives ip addresses automatically
--A dhcp pool is range of ip addresses taht can be given to clients.
--DHCP also provides information like gateway and DNS
--A client can get another IP when lease is no longer being used.
+## Configuration
+DHCP settings are maintained in `config/dhcp/ap-dhcp.conf`.
+
+dnsmasq listens on `ap0` and dynamically assigns network configurations to connected clients.
+
+## Testing
+Tested with an external mobile phone connected to `VirtualRouter`.
+
+- Client: `shivam-ka-phone`
+- Assigned IP: `192.168.50.45`
+- DHCP acknowledgement: Successful
+
+-implemented DHCP address allocation for external devices connected to the virtual router.

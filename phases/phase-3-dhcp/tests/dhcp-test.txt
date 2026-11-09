@@ -1,0 +1,35 @@
+# DHCP Test Record
+
+## 1. Configuration Validation
+
+Command:
+
+sudo dnsmasq --test --conf-file=config/dhcp/ap-dhcp.conf
+
+Result: Syntax check OK.
+
+## 2. DHCP Server Execution
+
+Command:
+
+sudo dnsmasq --conf-file=config/dhcp/ap-dhcp.conf --no-daemon
+
+Result: DHCP server started successfully on `ap0`.
+
+## 3. External Client Test
+
+Client: `shivam-ka-phone`
+
+DHCP exchange:
+
+DHCPDISCOVER
+DHCPOFFER 192.168.50.45
+DHCPREQUEST 192.168.50.45
+DHCPACK 192.168.50.45
+
+
+## 4. Result
+
+- Assigned IP: `192.168.50.45`
+- Interface: `ap0`
+- DHCP status: Successful
