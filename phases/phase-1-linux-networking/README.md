@@ -29,7 +29,7 @@
 
    ping -c 4 8.8.8.8 - Tests connectivity to external IP address
 
-3 Wirelwss Access Point Capability
+3 Wireless Access Point Capability
 
    iw list | grep -A 10 "Supported interface modes"
         

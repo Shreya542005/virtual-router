@@ -2,7 +2,7 @@
 
 ## What I did
 
-In this phase, I started working on connecting an external device (mobile phone) to my Linux laptop and using the laptop as a virtual router.
+In this phase, I worked on connecting an external device (mobile phone) to my Linux laptop and using the laptop as a virtual router.
 
 Instead of testing only with network namespaces, I tried creating a real Wi-Fi access point using my laptop's wireless adapter.
 
@@ -10,83 +10,72 @@ Instead of testing only with network namespaces, I tried creating a real Wi-Fi a
 
 First, I created a new wireless interface called `ap0`.
 
-```bash
+
 sudo iw dev wlp2s0 interface add ap0 type __ap
-```
 
-Then I checked the interface and changed its mode to AP.
 
-```bash
-sudo iw dev ap0 set type __ap
+I checked the interface mode using:
+
+
 iw dev ap0 info
-```
 
-The interface was successfully detected in AP mode.
+
+The interface was successfully created in AP mode.
 
 ## 2. Configuring the access point
 
-I installed and used `hostapd` to create my own Wi-Fi network.
+I used `hostapd` to create my own Wi-Fi network.
 
-Configuration file: `config/hostapd/hostapd.conf`
+- Wi-Fi name (SSID): `VirtualRouter`
+- Security: WPA2
 
-The Wi-Fi network name (SSID) is `VirtualRouter`.
+The configuration is stored in `config/hostapd/hostapd.conf`. The repository also contains an example configuration.
 
-I configured WPA2 security and started the access point using:
-
-```bash
-sudo hostapd -dd config/hostapd/hostapd.conf
-```
-
-The terminal displayed:
-
-```text
-ap0: AP-ENABLED
-ap0: Setup of interface done.
-```
-
-This confirmed that the access point started successfully.
+When I started hostapd, the terminal displayed `AP-ENABLED`, which confirmed that the access point started successfully.
 
 ## 3. Assigning an IP address
 
 I assigned a separate IP address to the virtual interface.
 
-```bash
+
 sudo ip addr add 192.168.50.1/24 dev ap0
 sudo ip link set ap0 up
-```
 
-Checked using:
 
-```bash
-ip addr show ap0
-```
+I checked the address using `ip addr show ap0`.
 
 Observed IP address: `192.168.50.1/24`
 
 ## 4. Connecting an external device
 
-I checked the Wi-Fi list on my mobile phone. The network `VirtualRouter` was visible.
+I connected my mobile phone to the `VirtualRouter` network.
 
-When I tried connecting, the hostapd terminal showed successful authentication and association.
+The hostapd log showed successful authentication and connection.
 
-```text
-AP-STA-CONNECTED
-WPA: pairwise key handshake completed (RSN)
-EAPOL-4WAY-HS-COMPLETED
-```
+The phone received the IP address `192.168.50.45` through DHCP.
 
-The phone subsequently disconnected, so a stable connection is still to be verified.
+## 5. Enabling packet forwarding and NAT
 
-## 5. Work remaining
+I enabled IP forwarding in Linux:
 
-- Get a stable connection from the mobile phone.
-- Configure DHCP for the connected device.
-- Enable IP forwarding in Linux.
-- Configure NAT.
-- Test communication between the phone and external networks.
 
-## 6. Observation
+sudo sysctl -w net.ipv4.ip_forward=1
 
-The laptop successfully created and broadcast its own Wi-Fi network using `hostapd`. The mobile phone could detect the network and complete WPA authentication.
 
-The next step is to configure the remaining networking services so that the laptop can forward traffic from the connected device.
+I also configured NAT masquerading using iptables so that the connected device could access external networks through my laptop's Wi-Fi connection.
+
+## 6. Testing
+
+I tested the connection using my mobile phone.
+
+- The phone successfully connected to the virtual access point.
+- It received an IP address from the router.
+- It successfully accessed `example.com`.
+
+This confirmed that the laptop was forwarding client traffic to the upstream network.
+
+## 7. Observation
+
+I was able to use my Linux laptop as a Wi-Fi access point and provide internet connectivity to an external device.
+
+One limitation I observed is that changing the upstream Wi-Fi network or channel can interrupt the virtual access point because both interfaces use the same wireless adapter.
